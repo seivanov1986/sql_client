@@ -15,7 +15,7 @@ type DataBaseMethods interface {
 
 type DataBase interface {
 	DataBaseMethods
-	NewTransaction() (Transaction, error)
+	NewTransaction() (*sqlxTransaction, error)
 }
 
 type Transaction interface {
@@ -26,5 +26,5 @@ type Transaction interface {
 
 type TransactionManager interface {
 	MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error
-	FindTransaction(ctx context.Context) Transaction
+	FindTransaction(ctx context.Context) *sqlxTransaction
 }

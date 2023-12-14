@@ -26,5 +26,5 @@ type Transaction interface {
 
 type TransactionManager interface {
 	MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error
-	FindTransaction(ctx context.Context) *sqlxTransaction
+	FindTransaction(ctx context.Context) Transaction
 }

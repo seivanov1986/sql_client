@@ -28,6 +28,10 @@ func (d *dataBase) NamedExecContext(ctx context.Context, query string, arg inter
 	return d.db.NamedExecContext(ctx, query, arg)
 }
 
+func (d *dataBase) GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return d.db.GetContext(ctx, dest, query, args...)
+}
+
 func (d *dataBase) DeleteIn(ctx context.Context, query string, args ...interface{}) error {
 	query, inArgs, err := sqlx.In(query, args...)
 	if err != nil {
@@ -38,8 +42,20 @@ func (d *dataBase) DeleteIn(ctx context.Context, query string, args ...interface
 	return err
 }
 
-func (d *dataBase) GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
-	return d.db.GetContext(ctx, dest, query, args...)
+func (d *sqlxTransaction) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return d.SelectContext(ctx, dest, query, args...)
+}
+
+func (d *sqlxTransaction) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return d.ExecContext(ctx, query, args...)
+}
+
+func (d *sqlxTransaction) NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return d.NamedExecContext(ctx, query, arg)
+}
+
+func (d *sqlxTransaction) GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return d.GetContext(ctx, dest, query, args...)
 }
 
 func (d *sqlxTransaction) DeleteIn(ctx context.Context, query string, args ...interface{}) error {

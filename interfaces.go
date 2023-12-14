@@ -15,7 +15,7 @@ type DataBaseMethods interface {
 
 type DataBase interface {
 	DataBaseMethods
-	NewTransaction() (*sqlxTransaction, error)
+	NewTransaction() (Transaction, error)
 }
 
 type Transaction interface {

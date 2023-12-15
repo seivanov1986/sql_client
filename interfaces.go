@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+
+	"github.com/pressly/goose/v3"
 )
 
 type DataBaseMethods interface {
@@ -17,7 +19,7 @@ type DataBaseMethods interface {
 type DataBase interface {
 	DataBaseMethods
 	NewTransaction() (*sqlxTransaction, error)
-	RunMigrations(migrationFiles fs.FS) error
+	RunMigrations(l goose.Logger, migrationFiles fs.FS) error
 	Close() error
 }
 

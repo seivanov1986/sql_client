@@ -51,6 +51,7 @@ func (d *DataBaseImpl) DeleteIn(ctx context.Context, query string, args ...inter
 
 func (d *DataBaseImpl) RunMigrations(l goose.Logger, migrationFiles fs.FS) error {
 	goose.SetBaseFS(migrationFiles)
+	goose.SetDialect(d.DB.DriverName())
 	goose.SetLogger(l)
 	if err := goose.Up(d.DB.DB, migrationsDirectory); err != nil {
 		return fmt.Errorf("failure to perform migrations: %v", err)

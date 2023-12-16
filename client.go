@@ -3,14 +3,19 @@ package sql_client
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"io/fs"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/pressly/goose/v3"
 )
 
 type key string
 
 const (
 	trx key = "trx"
+
+	migrationsDirectory = "."
 )
 
 func (d *DataBaseImpl) NewTransaction() (*sqlxTransaction, error) {
@@ -42,6 +47,19 @@ func (d *DataBaseImpl) DeleteIn(ctx context.Context, query string, args ...inter
 
 	_, err = d.DB.ExecContext(ctx, query, inArgs...)
 	return err
+}
+
+func (d *DataBaseImpl) RunMigrations(l goose.Logger, migrationFiles fs.FS) error {
+	goose.SetBaseFS(migrationFiles)
+	goose.SetLogger(l)
+	if err := goose.Up(d.DB.DB, migrationsDirectory); err != nil {
+		return fmt.Errorf("failure to perform migrations: %v", err)
+	}
+	return nil
+}
+
+func (d *DataBaseImpl) Close() error {
+	return d.DB.Close()
 }
 
 func (t *sqlxTransaction) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {

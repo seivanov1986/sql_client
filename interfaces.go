@@ -3,6 +3,7 @@ package sql_client
 import (
 	"context"
 	"database/sql"
+	"io/fs"
 )
 
 type DataBaseMethods interface {
@@ -16,6 +17,8 @@ type DataBaseMethods interface {
 type DataBase interface {
 	DataBaseMethods
 	NewTransaction() (*sqlxTransaction, error)
+	RunMigrations(migrationFiles fs.FS) error
+	Close() error
 }
 
 type Transaction interface {

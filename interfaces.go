@@ -6,6 +6,7 @@ import (
 	"io/fs"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/pressly/goose/v3"
 )
 
 type DataBaseMethods interface {

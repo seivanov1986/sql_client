@@ -1,4 +1,4 @@
-package mysql
+package pgsql
 
 import (
 	"fmt"
@@ -8,20 +8,20 @@ import (
 	"github.com/seivanov1986/sql_client"
 	dbconfig "github.com/seivanov1986/sql_client/config"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 func NewClient(cfg *dbconfig.DBconfig) (*sql_client.DataBaseImpl, error) {
 	source := fmt.Sprintf(
-		"%v:%v@(%v:%v)/%v",
-		cfg.User,
-		cfg.Password,
+		"host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
 		cfg.Host,
 		cfg.Port,
+		cfg.User,
+		cfg.Password,
 		cfg.Database,
 	)
 
-	conn, err := sqlx.Connect("mysql", source)
+	conn, err := sqlx.Connect("postgres", source)
 	if err != nil {
 		return nil, err
 	}

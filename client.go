@@ -53,6 +53,10 @@ func (d *DataBaseImpl) DeleteIn(ctx context.Context, query string, args ...inter
 	return err
 }
 
+func (d *DataBaseImpl) PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error) {
+	return d.DB.PrepareNamedContext(ctx, query)
+}
+
 func (d *DataBaseImpl) RunMigrations(l goose.Logger, migrationFiles fs.FS) error {
 	goose.SetBaseFS(migrationFiles)
 	goose.SetDialect(d.DB.DriverName())
@@ -93,6 +97,10 @@ func (t *sqlxTransaction) DeleteIn(ctx context.Context, query string, args ...in
 	return err
 }
 
+func (d *sqlxTransaction) PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error) {
+	return d.TX.PrepareNamedContext(ctx, query)
+}
+
 func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
 	transaction, err := tr.db.NewTransaction()
 	if err != nil {
@@ -109,11 +117,18 @@ func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx c
 }
 
 func (tr *transactionManager) FindTransaction(ctx context.Context) *sqlxTransaction {
-	transaction := ctx.Value(trx)
-	result, ok := transaction.(*sqlxTransaction)
+	result, ok := ctx.Value(trx).(*sqlxTransaction)
 	if !ok {
 		return nil
 	}
 
 	return result
+}
+
+func (tr *transactionManager) DefaultTrOrDB(ctx context.Context, db DataBaseMethods) DataBaseMethods {
+	tx, ok := ctx.Value(trx).(*sqlxTransaction)
+	if !ok {
+		return db
+	}
+	return tx
 }

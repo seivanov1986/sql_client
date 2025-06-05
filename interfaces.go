@@ -35,5 +35,5 @@ type Transaction interface {
 type TransactionManager interface {
 	MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error
 	FindTransaction(ctx context.Context) *sqlxTransaction
-	DefaultTrOrDB(ctx context.Context, db DataBaseMethods) DataBaseMethods
+	DefaultTrOrDB(ctx context.Context) DataBaseMethods
 }

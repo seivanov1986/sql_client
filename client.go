@@ -23,7 +23,10 @@ func (d *DataBaseImpl) GetDB() *sqlx.DB {
 }
 
 func (d *DataBaseImpl) NewTransaction() (*sqlxTransaction, error) {
-	tx, _ := d.DB.Beginx()
+	tx, err := d.DB.Beginx()
+	if err != nil {
+		return nil, err
+	}
 	return &sqlxTransaction{tx}, nil
 }
 
@@ -125,10 +128,10 @@ func (tr *transactionManager) FindTransaction(ctx context.Context) *sqlxTransact
 	return result
 }
 
-func (tr *transactionManager) DefaultTrOrDB(ctx context.Context, db DataBaseMethods) DataBaseMethods {
+func (tr *transactionManager) DefaultTrOrDB(ctx context.Context) DataBaseMethods {
 	tx, ok := ctx.Value(trx).(*sqlxTransaction)
-	if !ok {
-		return db
+	if ok {
+		return tx
 	}
-	return tx
+	return tr.db
 }

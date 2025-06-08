@@ -104,7 +104,7 @@ func (d *sqlxTransaction) PrepareNamedContext(ctx context.Context, query string)
 	return d.TX.PrepareNamedContext(ctx, query)
 }
 
-func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+func (tr *transactionManager) CreateNewTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
 	transaction, err := tr.db.NewTransaction()
 	if err != nil {
 		return err
@@ -117,6 +117,16 @@ func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx c
 	}
 
 	return transaction.TX.Commit()
+}
+
+// uses an external transaction or creates a new one
+func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+	transaction := tr.FindTransaction(ctx)
+	if transaction != nil {
+		return fn(ctx)
+	}
+
+	return tr.CreateNewTransaction(ctx, fn)
 }
 
 func (tr *transactionManager) FindTransaction(ctx context.Context) *sqlxTransaction {

@@ -10,6 +10,7 @@ type DBconfig struct {
 	User     string
 	Password string
 	Database string
+	Schema   *string
 }
 
 func (d *DBconfig) Validate() error {

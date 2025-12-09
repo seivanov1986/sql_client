@@ -5,11 +5,12 @@ import (
 )
 
 type DBconfig struct {
-	Port      int
-	Host      string
-	User      string
-	Password  string
-	Database  string
+	Port     int
+	Host     string
+	User     string
+	Password string
+	Database string
+	Schema   *string
 	ParseTime bool
 }
 

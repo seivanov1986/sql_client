@@ -23,7 +23,10 @@ func (d *DataBaseImpl) GetDB() *sqlx.DB {
 }
 
 func (d *DataBaseImpl) NewTransaction() (*sqlxTransaction, error) {
-	tx, _ := d.DB.Beginx()
+	tx, err := d.DB.Beginx()
+	if err != nil {
+		return nil, err
+	}
 	return &sqlxTransaction{tx}, nil
 }
 
@@ -51,6 +54,10 @@ func (d *DataBaseImpl) DeleteIn(ctx context.Context, query string, args ...inter
 
 	_, err = d.DB.ExecContext(ctx, query, inArgs...)
 	return err
+}
+
+func (d *DataBaseImpl) PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error) {
+	return d.DB.PrepareNamedContext(ctx, query)
 }
 
 func (d *DataBaseImpl) RunMigrations(l goose.Logger, migrationFiles fs.FS) error {
@@ -93,7 +100,11 @@ func (t *sqlxTransaction) DeleteIn(ctx context.Context, query string, args ...in
 	return err
 }
 
-func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+func (d *sqlxTransaction) PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error) {
+	return d.TX.PrepareNamedContext(ctx, query)
+}
+
+func (tr *transactionManager) CreateNewTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
 	transaction, err := tr.db.NewTransaction()
 	if err != nil {
 		return err
@@ -108,12 +119,29 @@ func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx c
 	return transaction.TX.Commit()
 }
 
+// uses an external transaction or creates a new one
+func (tr *transactionManager) MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+	transaction := tr.FindTransaction(ctx)
+	if transaction != nil {
+		return fn(ctx)
+	}
+
+	return tr.CreateNewTransaction(ctx, fn)
+}
+
 func (tr *transactionManager) FindTransaction(ctx context.Context) *sqlxTransaction {
-	transaction := ctx.Value(trx)
-	result, ok := transaction.(*sqlxTransaction)
+	result, ok := ctx.Value(trx).(*sqlxTransaction)
 	if !ok {
 		return nil
 	}
 
 	return result
+}
+
+func (tr *transactionManager) DefaultTrOrDB(ctx context.Context) DataBaseMethods {
+	tx, ok := ctx.Value(trx).(*sqlxTransaction)
+	if ok {
+		return tx
+	}
+	return tr.db
 }

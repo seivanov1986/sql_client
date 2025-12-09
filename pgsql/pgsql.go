@@ -11,14 +11,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const defaultSchema = "public"
+
 func NewClient(cfg *dbconfig.DBconfig) (*sql_client.DataBaseImpl, error) {
-	source := fmt.Sprintf(
-		"host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
+	var schema string = defaultSchema
+	if cfg.Schema != nil {
+		schema = *cfg.Schema
+	}
+
+	source := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable search_path=%s",
 		cfg.Host,
 		cfg.Port,
 		cfg.User,
 		cfg.Password,
 		cfg.Database,
+		schema,
 	)
 
 	conn, err := sqlx.Connect("postgres", source)

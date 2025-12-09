@@ -15,6 +15,7 @@ type DataBaseMethods interface {
 	DeleteIn(ctx context.Context, query string, args ...interface{}) error
 	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
 	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error)
 }
 
 type DataBase interface {
@@ -32,6 +33,8 @@ type Transaction interface {
 }
 
 type TransactionManager interface {
+	CreateNewTransaction(ctx context.Context, fn func(ctx context.Context) error) error
 	MakeTransaction(ctx context.Context, fn func(ctx context.Context) error) error
 	FindTransaction(ctx context.Context) *sqlxTransaction
+	DefaultTrOrDB(ctx context.Context) DataBaseMethods
 }

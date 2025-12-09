@@ -5,11 +5,12 @@ import (
 )
 
 type DBconfig struct {
-	Port     int
-	Host     string
-	User     string
-	Password string
-	Database string
+	Port      int
+	Host      string
+	User      string
+	Password  string
+	Database  string
+	ParseTime bool
 }
 
 func (d *DBconfig) Validate() error {

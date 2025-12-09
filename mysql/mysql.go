@@ -13,12 +13,13 @@ import (
 
 func NewClient(cfg *dbconfig.DBconfig) (*sql_client.DataBaseImpl, error) {
 	source := fmt.Sprintf(
-		"%v:%v@(%v:%v)/%v",
+		"%v:%v@(%v:%v)/%v?parseTime=%t",
 		cfg.User,
 		cfg.Password,
 		cfg.Host,
 		cfg.Port,
 		cfg.Database,
+		cfg.ParseTime,
 	)
 
 	conn, err := sqlx.Connect("mysql", source)

@@ -16,6 +16,10 @@ type (
 	}
 )
 
+func (t *sqlxTransaction) BindNamed(query string, arg interface{}) (string, []interface{}, error) {
+	return t.TX.BindNamed(query, arg)
+}
+
 // SetConnMaxIdleTime sets the maximum amount of time a connection may be idle.
 //
 // Expired connections may be closed lazily before reuse.

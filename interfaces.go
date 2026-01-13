@@ -16,6 +16,7 @@ type DataBaseMethods interface {
 	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
 	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 	PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error)
+	BindNamed(query string, arg interface{}) (string, []interface{}, error)
 }
 
 type DataBase interface {

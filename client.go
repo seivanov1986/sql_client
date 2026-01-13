@@ -46,6 +46,10 @@ func (d *DataBaseImpl) GetContext(ctx context.Context, dest interface{}, query s
 	return d.DB.GetContext(ctx, dest, query, args...)
 }
 
+func (d *DataBaseImpl) BindNamed(query string, arg interface{}) (string, []interface{}, error) {
+	return d.DB.BindNamed(query, arg)
+}
+
 func (d *DataBaseImpl) DeleteIn(ctx context.Context, query string, args ...interface{}) error {
 	query, inArgs, err := sqlx.In(query, args...)
 	if err != nil {

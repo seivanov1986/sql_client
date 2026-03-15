@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	_ "github.com/covenantsql/go-sqlite3-encrypt"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func NewClient(dataSourcePath string) (*sql_client.DataBaseImpl, error) {
@@ -23,7 +22,8 @@ func NewEncryptedClient(dataSourcePath, key string) (*sql_client.DataBaseImpl, e
 	escapedPath := url.QueryEscape(dataSourcePath)
 	escapedKey := url.QueryEscape(key)
 
-	dsn := fmt.Sprintf("%s?_pragma_key=%s&_pragma_cipher_page_size=4096",
+	dsn := fmt.Sprintf(
+		"file:%s?_crypto_key=%s&_pragma_cipher_page_size=4096",
 		escapedPath,
 		escapedKey,
 	)

@@ -5,9 +5,9 @@ go 1.21
 require github.com/jmoiron/sqlx v1.3.5
 
 require (
-	github.com/covenantsql/go-sqlite3-encrypt v1.9.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/lib/pq v1.2.0
+	github.com/mutecomm/go-sqlcipher/v4 v4.4.2
 	github.com/pressly/goose/v3 v3.17.0
 )
 

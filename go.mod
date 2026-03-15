@@ -2,10 +2,7 @@ module github.com/seivanov1986/sql_client
 
 go 1.21
 
-require (
-	github.com/jmoiron/sqlx v1.3.5
-	github.com/mattn/go-sqlite3 v1.14.6
-)
+require github.com/jmoiron/sqlx v1.3.5
 
 require (
 	github.com/covenantsql/go-sqlite3-encrypt v1.9.0
